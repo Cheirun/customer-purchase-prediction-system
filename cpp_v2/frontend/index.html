@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Purchase Predictor — ML Project</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/style.css"/>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="brand-dot"></span>Customer Purchase Predictor</div>
+    <nav class="nav-pills">
+      <button class="pill active" data-tab="predict">Predict</button>
+      <button class="pill" data-tab="metrics">Metrics</button>
+      <button class="pill" data-tab="charts">Charts</button>
+      <a href="/company" class="pill co-pill">Company ↗</a>
+      <a href="/history" class="pill co-pill">History ↗</a>
+    </nav>
+    <div class="course-tag">B.Tech CS · III Year · Sec A</div>
+  </div>
+</header>
+
+<div class="hero-strip">
+  <div class="hero-strip-inner">
+    <div class="hero-copy">
+      <h1 class="hero-h1">Will they<br/><em>buy or bounce?</em></h1>
+      <p class="hero-p">
+        Customer data is fetched automatically from the live dataset.
+        Hit <strong>Next Customer</strong> to cycle through records —
+        all four models predict instantly, no manual input required.
+      </p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-box"><span class="stat-n">4</span><span class="stat-l">Classifiers</span></div>
+      <div class="stat-box"><span class="stat-n">8</span><span class="stat-l">Features</span></div>
+      <div class="stat-box"><span class="stat-n">1K</span><span class="stat-l">Customers</span></div>
+    </div>
+  </div>
+</div>
+
+<main class="main">
+
+  <!-- ═══ TAB: PREDICT ═══ -->
+  <section id="tab-predict" class="tab active">
+    <div class="predict-layout">
+
+      <!-- form -->
+      <div class="pane form-pane">
+        <div class="pane-head">
+          <span class="pane-num">01</span>
+          <h2 class="pane-title">Customer Profile</h2>
+          <button class="next-btn" id="nextCustomerBtn">↻  Next Customer</button>
+        </div>
+        <p class="auto-note">⚡ Auto-fetched from dataset — edit fields below to override</p>
+
+        <div class="form-rows">
+          <div class="row-2">
+            <div class="field">
+              <label>Age <span class="range">(18–65)</span></label>
+              <div class="inp-wrap"><input type="number" id="f-age" min="18" max="65"/><span class="inp-tag">yrs</span></div>
+            </div>
+            <div class="field">
+              <label>Annual Income</label>
+              <div class="inp-wrap"><span class="inp-tag left">₹</span><input type="number" id="f-income"/></div>
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label>Time on Site</label>
+              <div class="inp-wrap"><input type="number" id="f-time" step="0.5"/><span class="inp-tag">min</span></div>
+            </div>
+            <div class="field">
+              <label>Pages Viewed</label>
+              <div class="inp-wrap"><input type="number" id="f-pages" min="1" max="20"/><span class="inp-tag">pg</span></div>
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label>Past Orders</label>
+              <div class="inp-wrap"><input type="number" id="f-orders" min="0" max="15"/><span class="inp-tag">orders</span></div>
+            </div>
+            <div class="field">
+              <label>Gender</label>
+              <div class="sel-wrap"><select id="f-gender"><option>Male</option><option>Female</option></select></div>
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label>Device</label>
+              <div class="sel-wrap"><select id="f-device"><option>Mobile</option><option>Desktop</option><option>Tablet</option></select></div>
+            </div>
+            <div class="field">
+              <label>Discount Given?</label>
+              <div class="toggle-field">
+                <label class="sw">
+                  <input type="checkbox" id="f-discount"/>
+                  <span class="sw-track"><span class="sw-thumb"></span></span>
+                </label>
+                <span class="sw-val" id="sw-label">No</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="run-btn" id="runBtn">
+          Predict with Edited Data <span class="run-arrow">→</span>
+        </button>
+      </div>
+
+      <!-- results -->
+      <div class="pane results-pane">
+        <div class="pane-head">
+          <span class="pane-num">02</span>
+          <h2 class="pane-title">Prediction Output</h2>
+        </div>
+
+        <!-- actual label from dataset -->
+        <div id="actual-label-box" class="actual-label hidden">
+          <span id="actual-label-text"></span>
+        </div>
+
+        <div id="results-empty" class="results-empty">
+          <div class="empty-circle"></div>
+          <p>Fetching customer data…</p>
+        </div>
+
+        <div id="results-loading" class="results-loading hidden">
+          <div class="spinner"></div>
+          <p>Running predictions…</p>
+        </div>
+
+        <div id="results-cards" class="results-cards hidden"></div>
+
+        <div id="verdict" class="verdict hidden">
+          <div class="verdict-inner">
+            <span class="verdict-tag">Final Verdict</span>
+            <p id="verdict-text" class="verdict-text">—</p>
+            <p id="verdict-meta" class="verdict-meta">—</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ TAB: METRICS ═══ -->
+  <section id="tab-metrics" class="tab">
+    <div class="pane wide-pane">
+      <div class="pane-head">
+        <span class="pane-num">03</span>
+        <h2 class="pane-title">Model Performance</h2>
+        <span class="pane-sub">Evaluated on 20% held-out test data</span>
+      </div>
+      <div id="metrics-area"><p class="muted-msg">Loading…</p></div>
+    </div>
+  </section>
+
+  <!-- ═══ TAB: CHARTS ═══ -->
+  <section id="tab-charts" class="tab">
+    <div class="pane wide-pane">
+      <div class="pane-head">
+        <span class="pane-num">04</span>
+        <h2 class="pane-title">EDA &amp; Evaluation Charts</h2>
+        <span class="pane-sub">Generated during training</span>
+      </div>
+      <div id="charts-area" class="charts-area"><p class="muted-msg">Loading…</p></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Customer Purchase Prediction System &nbsp;·&nbsp;
+     C. Krishna Sree Vallabh (245523748010) &nbsp;·&nbsp;
+     M. Mahitha (245523748039) &nbsp;·&nbsp;
+     G. Charan (245523748303)</p>
+</footer>
+
+<script src="static/js/app.js"></script>
+</body>
+</html>

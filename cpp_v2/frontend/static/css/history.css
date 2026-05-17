@@ -1,0 +1,133 @@
+/* history.css  |  History & Analytics Page */
+
+/* ── atlas banner ── */
+.atlas-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-family: var(--mono);
+  font-size: .78rem;
+  font-weight: 500;
+}
+.atlas-banner.ok  { background: #f0fdf4; border: 1px solid #86efac; color: var(--sage); }
+.atlas-banner.err { background: #fff1f2; border: 1px solid #fca5a5; color: #b91c1c; }
+.atlas-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  animation: pulse 2s infinite;
+}
+.atlas-banner.ok  .atlas-dot { background: var(--sage); }
+.atlas-banner.err .atlas-dot { background: #dc2626; animation: none; }
+@keyframes pulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: .4; }
+}
+
+/* ── section blocks ── */
+.section-block { margin-bottom: 28px; }
+.section-head  {
+  display: flex; align-items: baseline;
+  gap: 14px; margin-bottom: 14px; flex-wrap: wrap;
+}
+.section-title {
+  font-family: var(--serif);
+  font-size: 1.2rem; font-weight: 400; color: var(--ink);
+}
+.section-sub {
+  font-size: .78rem; color: var(--ink-40); flex: 1;
+}
+
+/* ── accuracy cards ── */
+.accuracy-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.acc-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  animation: fadeIn .3s ease;
+}
+.acc-model {
+  font-size: .7rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .07em;
+  color: var(--ink-40); margin-bottom: 10px;
+}
+.acc-score {
+  font-family: var(--serif);
+  font-size: 2.2rem; line-height: 1;
+  color: var(--ink); margin-bottom: 6px;
+}
+.acc-score.hi  { color: var(--sage); }
+.acc-score.mid { color: var(--gold); }
+.acc-score.lo  { color: #b91c1c; }
+
+.acc-bar-bg {
+  background: var(--warm-100); border-radius: 3px; height: 5px; overflow: hidden; margin-bottom: 8px;
+}
+.acc-bar-fill {
+  height: 100%; border-radius: 3px;
+  transition: width .8s cubic-bezier(.34,1.56,.64,1);
+}
+.acc-card.hi-card .acc-bar-fill { background: var(--sage); }
+.acc-card.mid-card .acc-bar-fill { background: var(--gold); }
+.acc-card.lo-card .acc-bar-fill { background: #dc2626; }
+
+.acc-meta {
+  font-family: var(--mono); font-size: .7rem; color: var(--ink-40);
+}
+
+/* skeleton loading */
+.acc-skeleton {
+  background: var(--warm-100);
+  border-radius: var(--r);
+  height: 120px;
+  animation: shimmer 1.4s ease infinite;
+}
+@keyframes shimmer {
+  0%,100% { opacity: .6; }
+  50%      { opacity: 1; }
+}
+
+/* ── chart pane ── */
+.chart-pane { padding: 20px; }
+
+/* ── retrain table ── */
+.retrain-tbl { width: 100%; border-collapse: collapse; font-size: .84rem; }
+.retrain-tbl thead th {
+  text-align: left; font-size: .68rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .07em;
+  color: var(--ink-40); padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+}
+.retrain-tbl tbody tr { border-bottom: 1px solid var(--warm-50); }
+.retrain-tbl tbody tr:hover { background: var(--cream); }
+.retrain-tbl td {
+  padding: 10px 12px; font-family: var(--mono); font-size: .82rem;
+}
+.retrain-tbl td:first-child { color: var(--ink-40); font-size: .72rem; }
+
+/* ── history table uses batch-tbl from company.css ── */
+/* ── reuse .table-pane, .table-scroll, .batch-tbl, .spinner ── */
+
+.icon-btn {
+  background: none; border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 14px;
+  font-family: var(--sans); font-size: .8rem; font-weight: 600;
+  color: var(--ink-60); cursor: pointer; transition: all .14s;
+  margin-left: auto;
+}
+.icon-btn:hover { border-color: var(--ink-40); color: var(--ink); }
+
+/* ── responsive ── */
+@media (max-width: 860px) {
+  .accuracy-cards { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 500px) {
+  .accuracy-cards { grid-template-columns: 1fr; }
+}

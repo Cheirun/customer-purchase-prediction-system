@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Company Dashboard — Purchase Predictor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/style.css"/>
+  <link rel="stylesheet" href="static/css/company.css"/>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="brand-dot"></span>Customer Purchase Predictor</div>
+    <nav class="nav-pills">
+      <a href="/" class="pill">Individual</a>
+      <a href="/company" class="pill active">Company</a>
+      <a href="/history" class="pill co-pill">History ↗</a>
+    </nav>
+    <div class="course-tag">B.Tech CS · III Year · Sec A</div>
+  </div>
+</header>
+
+<div class="hero-strip">
+  <div class="hero-strip-inner">
+    <div class="hero-copy">
+      <h1 class="hero-h1">Company<br/><em>Batch Dashboard</em></h1>
+      <p class="hero-p">
+        Live predictions for all 1000 customers — fetched automatically
+        from the dataset. Filter by outcome, set a minimum probability
+        threshold, paginate, and download the full results.
+      </p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-box"><span class="stat-n">1K</span><span class="stat-l">Customers</span></div>
+      <div class="stat-box"><span class="stat-n">RF</span><span class="stat-l">Model</span></div>
+      <div class="stat-box"><span class="stat-n">Live</span><span class="stat-l">Auto-fetch</span></div>
+    </div>
+  </div>
+</div>
+
+<main class="main">
+
+  <!-- controls bar -->
+  <div class="controls-bar pane">
+    <div class="controls-left">
+
+      <!-- filter buttons -->
+      <div class="ctrl-group">
+        <span class="ctrl-label">Show</span>
+        <div class="table-filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="buy">Will Buy</button>
+          <button class="filter-btn" data-filter="nobuy">Won't Buy</button>
+        </div>
+      </div>
+
+      <!-- min probability slider -->
+      <div class="ctrl-group">
+        <span class="ctrl-label">Min Probability</span>
+        <div class="prob-slider-wrap">
+          <input type="range" id="prob-filter" min="0" max="90" step="5" value="0"/>
+          <span class="prob-val-badge" id="prob-val">0%</span>
+        </div>
+      </div>
+
+    </div>
+    <div class="controls-right">
+      <button class="icon-btn" id="refreshBtn" title="Refresh">↺ Refresh</button>
+      <button class="dl-btn green" id="downloadAllBtn">↓ Download All CSV</button>
+    </div>
+  </div>
+
+  <!-- summary cards -->
+  <div id="co-summary" class="co-summary hidden">
+    <div class="sum-card buy">
+      <span class="sum-n" id="sum-buy">0</span>
+      <span class="sum-l">Will Purchase</span>
+    </div>
+    <div class="sum-card nobuy">
+      <span class="sum-n" id="sum-nobuy">0</span>
+      <span class="sum-l">Won't Purchase</span>
+    </div>
+    <div class="sum-card neutral">
+      <span class="sum-n" id="sum-showing">0</span>
+      <span class="sum-l">Showing</span>
+    </div>
+    <div class="sum-card neutral">
+      <span class="sum-n" id="sum-prob">—</span>
+      <span class="sum-l">Avg Probability</span>
+    </div>
+  </div>
+
+  <!-- table -->
+  <div id="co-table-wrap" class="pane table-pane hidden">
+
+    <!-- loading overlay -->
+    <div id="table-loading" class="table-loading hidden">
+      <div class="spinner"></div>
+      <span>Fetching predictions…</span>
+    </div>
+
+    <div class="table-scroll">
+      <table class="batch-tbl" id="batchTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Age</th>
+            <th>Income (₹)</th>
+            <th>Mins</th>
+            <th>Pages</th>
+            <th>Orders</th>
+            <th>Discount</th>
+            <th>Gender</th>
+            <th>Device</th>
+            <th>Probability</th>
+            <th>Verdict</th>
+          </tr>
+        </thead>
+        <tbody id="batchBody"></tbody>
+      </table>
+    </div>
+
+    <!-- pagination -->
+    <div id="pagination-row" class="pagination-row hidden">
+      <button class="page-btn" id="prevBtn">← Prev</button>
+      <span class="page-info" id="page-info">Page 1</span>
+      <button class="page-btn" id="nextBtn">Next →</button>
+    </div>
+
+  </div>
+
+  <!-- retrain -->
+  <div class="pane retrain-pane">
+    <div class="retrain-inner">
+      <div>
+        <h3 class="step-title">Retrain Models</h3>
+        <p class="step-desc">Re-runs the full training pipeline with fresh data. All predictions update automatically after.</p>
+      </div>
+      <button class="retrain-btn" id="retrainBtn">⟳  Retrain Now</button>
+    </div>
+    <div id="retrain-msg" class="retrain-msg hidden"></div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Customer Purchase Prediction System &nbsp;·&nbsp;
+     C. Krishna Sree Vallabh (245523748010) &nbsp;·&nbsp;
+     M. Mahitha (245523748039) &nbsp;·&nbsp;
+     G. Charan (245523748303)</p>
+</footer>
+
+<script src="static/js/company.js"></script>
+</body>
+</html>
