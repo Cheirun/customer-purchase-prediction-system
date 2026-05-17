@@ -1,4 +1,4 @@
-# customer-purchase-prediction-system
+
 # Customer Purchase Prediction System
 
 A full-stack machine learning web application that predicts whether a customer is likely to purchase a product based on demographic and browsing behavior data.
