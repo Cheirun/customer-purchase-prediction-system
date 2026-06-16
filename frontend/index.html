@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Purchase Predictor — ML Project</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/style.css"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #F6F5F2;
+      --surface:   #FFFFFF;
+      --ink:       #1A1A1A;
+      --ink-2:     #555450;
+      --ink-3:     #888680;
+      --rule:      #E2E0DA;
+      --accent:    #3B5BDB;
+      --accent-lt: #EEF2FF;
+      --buy:       #1A6B3C;
+      --buy-lt:    #EAFAF1;
+      --nobuy:     #991B1B;
+      --nobuy-lt:  #FEF2F2;
+      --radius:    10px;
+      --radius-lg: 16px;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--rule);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      flex-shrink: 0;
+    }
+    .topbar-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .brand {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .brand-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+    }
+    .nav-pills {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+    }
+    .pill {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-2);
+      padding: 5px 14px;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .pill:hover { background: var(--bg); color: var(--ink); }
+    .pill.active { background: var(--ink); color: #fff; }
+
+    /* ── Hero (compact) ── */
+    .hero {
+      background: #141414;
+      color: #F6F5F2;
+      padding: 1.6rem 2rem 1.4rem;
+      flex-shrink: 0;
+    }
+    .hero-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .hero-copy { flex: 1; }
+    .hero-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: #888;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .hero-h1 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 400;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: #F6F5F2;
+      margin-bottom: 0.4rem;
+    }
+    .hero-h1 em { font-style: italic; color: #A5B4FC; }
+    .hero-p {
+      font-size: 13px;
+      color: #999;
+      max-width: 500px;
+      line-height: 1.5;
+    }
+    .hero-p strong { color: #ccc; font-weight: 500; }
+
+    .hero-stats {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .stat-box {
+      background: #1E1E1E;
+      border: 1px solid #2E2E2E;
+      border-radius: var(--radius);
+      padding: 0.7rem 1.1rem;
+      min-width: 100px;
+      text-align: right;
+    }
+    .stat-n {
+      display: block;
+      font-family: 'Fraunces', serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #A5B4FC;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .stat-l {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #666;
+      margin-top: 3px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Main fills remaining space ── */
+    .main {
+      max-width: 1180px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.25rem 2rem 1.25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Tabs ── */
+    .tab { display: none; flex: 1; flex-direction: column; }
+    .tab.active { display: flex; }
+
+    /* ── Predict layout: side by side ── */
+    .predict-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      align-items: start;
+      flex: 1;
+    }
+
+    /* ── Pane ── */
+    .pane {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+    }
+    .wide-pane { max-width: 100%; }
+
+    .pane-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .pane-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      flex: 1;
+    }
+    .pane-sub {
+      font-size: 13px;
+      color: var(--ink-3);
+      font-style: italic;
+    }
+
+    /* ── Next customer button ── */
+    .next-btn {
+      background: none;
+      border: 1.5px solid var(--ink);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .next-btn:hover { background: var(--ink); color: #fff; }
+
+    /* ── Form fields ── */
+    .form-rows { display: flex; flex-direction: column; gap: 10px; }
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .field label {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 4px;
+    }
+    .range { font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--ink-3); font-size: 10px; }
+
+    .inp-wrap {
+      display: flex;
+      align-items: stretch;
+      border: 1.5px solid var(--rule);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--surface);
+      transition: border-color 0.15s;
+    }
+    .inp-wrap:focus-within { border-color: var(--accent); }
+    .inp-wrap input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 7px 9px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      background: transparent;
+      color: var(--ink);
+      min-width: 0;
+    }
+    .inp-tag {
+      padding: 0 9px;
+      background: var(--bg);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--ink-3);
+      display: flex;
+      align-items: center;
+      border-left: 1.5px solid var(--rule);
+      white-space: nowrap;
+    }
+    .inp-tag.left { border-left: none; border-right: 1.5px solid var(--rule); }
+
+    .sel-wrap select {
+      width: 100%;
+      border: 1.5px solid var(--rule);
+      border-radius: var(--radius);
+      padding: 7px 9px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      background: var(--surface);
+      color: var(--ink);
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+    }
+    .sel-wrap select:focus { border-color: var(--accent); }
+
+    /* toggle */
+    .toggle-field { display: flex; align-items: center; gap: 10px; padding-top: 2px; }
+    .sw { position: relative; display: inline-block; width: 38px; height: 20px; flex-shrink: 0; }
+    .sw input { opacity: 0; width: 0; height: 0; }
+    .sw-track {
+      position: absolute; inset: 0;
+      background: var(--rule);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .sw input:checked ~ .sw-track { background: var(--accent); }
+    .sw-thumb {
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 16px; height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .sw input:checked ~ .sw-track .sw-thumb { transform: translateX(18px); }
+    .sw-val { font-size: 13px; color: var(--ink-2); font-family: 'JetBrains Mono', monospace; }
+
+    /* run button */
+    .run-btn {
+      margin-top: 1rem;
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 10px 20px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.15s;
+      letter-spacing: 0.01em;
+    }
+    .run-btn:hover { opacity: 0.88; }
+    .run-arrow { font-size: 16px; }
+
+    /* ── Results pane ── */
+    .actual-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border-radius: var(--radius);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+    .actual-label.bought { background: var(--buy-lt); color: var(--buy); border: 1px solid #BBF7D0; }
+    .actual-label.not-bought { background: var(--nobuy-lt); color: var(--nobuy); border: 1px solid #FECACA; }
+    .hidden { display: none !important; }
+
+    .results-empty, .results-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 0;
+      color: var(--ink-3);
+      font-size: 14px;
+      gap: 12px;
+    }
+    .empty-circle {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 2px dashed var(--rule);
+    }
+    .spinner {
+      width: 26px; height: 26px;
+      border: 2.5px solid var(--rule);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Prediction cards ── */
+    .results-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .model-row {
+      display: grid;
+      grid-template-columns: 120px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border: 1px solid var(--rule);
+      border-radius: var(--radius);
+      background: var(--bg);
+      transition: border-color 0.15s;
+    }
+    .model-row.winner {
+      background: var(--accent-lt);
+      border-color: #C7D2FE;
+    }
+    .model-row.buy-pred { border-left: 3px solid var(--buy); }
+    .model-row.nobuy-pred { border-left: 3px solid var(--nobuy); }
+
+    .model-name {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .model-verdict {
+      font-family: 'Fraunces', serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .model-verdict.buy { color: var(--buy); }
+    .model-verdict.nobuy { color: var(--nobuy); }
+
+    .model-bar-wrap { position: relative; }
+    .model-bar-bg {
+      height: 4px;
+      background: var(--rule);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .model-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.6s cubic-bezier(0.22,1,0.36,1);
+    }
+    .model-bar-fill.buy { background: var(--buy); }
+    .model-bar-fill.nobuy { background: var(--nobuy); }
+
+    .model-pct {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-2);
+      white-space: nowrap;
+    }
+
+    /* ── Verdict ── */
+    .verdict {
+      margin-top: 1rem;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      background: var(--ink);
+      color: #F6F5F2;
+    }
+    .verdict-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #777;
+      display: block;
+      margin-bottom: 3px;
+    }
+    .verdict-text {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .verdict-meta {
+      font-size: 12px;
+      color: #999;
+      margin-top: 3px;
+    }
+
+    /* ── Metrics tab ── */
+    #metrics-area .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .metric-card {
+      background: var(--bg);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+    }
+    .metric-card .mc-model {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 10px;
+    }
+    .metric-card .mc-acc {
+      font-family: 'Fraunces', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+    .metric-card .mc-label {
+      font-size: 12px;
+      color: var(--ink-3);
+      margin-top: 2px;
+    }
+    .metric-card table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 12px;
+    }
+    .metric-card td {
+      padding: 3px 0;
+      color: var(--ink-2);
+    }
+    .metric-card td:last-child {
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--ink);
+      font-weight: 500;
+    }
+    .muted-msg { color: var(--ink-3); font-size: 14px; }
+
+    /* ── Charts tab ── */
+    .charts-area {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+    .chart-card {
+      background: var(--bg);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .chart-card img { width: 100%; display: block; }
+    .chart-card-label {
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--ink-3);
+      border-top: 1px solid var(--rule);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      border-top: 1px solid var(--rule);
+      text-align: center;
+      padding: 0.9rem 2rem;
+      font-size: 11px;
+      color: var(--ink-3);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 780px) {
+      .predict-layout { grid-template-columns: 1fr; }
+      .hero-inner { flex-wrap: wrap; }
+      .hero-stats { flex-direction: row; flex-wrap: wrap; }
+      .stat-box { flex: 1; min-width: 80px; }
+      .row-2 { grid-template-columns: 1fr; }
+      .model-row { grid-template-columns: 100px 1fr auto; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="brand-dot"></span>Purchase Predictor</div>
+    <nav class="nav-pills">
+      <button class="pill active" data-tab="predict">Predict</button>
+      <button class="pill" data-tab="metrics">Metrics</button>
+      <button class="pill" data-tab="charts">Charts</button>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <p class="hero-label">Customer Behaviour · ML Classifier</p>
+      <h1 class="hero-h1">Will they <em>buy or bounce?</em></h1>
+      <p class="hero-p">
+        Customer data is fetched automatically from the live dataset.
+        Hit <strong>Next Customer</strong> to cycle through records —
+        all four models predict instantly.
+      </p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-box">
+        <span class="stat-n">4</span>
+        <span class="stat-l">Classifiers</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-n">1K</span>
+        <span class="stat-l">Customers</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="main">
+
+  <!-- TAB: PREDICT -->
+  <section id="tab-predict" class="tab active">
+    <div class="predict-layout">
+
+      <div class="pane form-pane">
+        <div class="pane-head">
+          <h2 class="pane-title">Customer profile</h2>
+          <button class="next-btn" id="nextCustomerBtn">↻ Next customer</button>
+        </div>
+
+        <div class="form-rows">
+          <div class="row-2">
+            <div class="field">
+              <label>Age <span class="range">(18–65)</span></label>
+              <div class="inp-wrap"><input type="number" id="f-age" min="18" max="65"/><span class="inp-tag">yrs</span></div>
+            </div>
+            <div class="field">
+              <label>Annual income</label>
+              <div class="inp-wrap"><span class="inp-tag left">₹</span><input type="number" id="f-income"/></div>
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label>Time on site</label>
+              <div class="inp-wrap"><input type="number" id="f-time" step="0.5"/><span class="inp-tag">min</span></div>
+            </div>
+            <div class="field">
+              <label>Pages viewed</label>
+              <div class="inp-wrap"><input type="number" id="f-pages" min="1" max="20"/><span class="inp-tag">pg</span></div>
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label>Past orders</label>
+              <div class="inp-wrap"><input type="number" id="f-orders" min="0" max="15"/><span class="inp-tag">orders</span></div>
+            </div>
+            <div class="field">
+              <label>Gender</label>
+              <div class="sel-wrap"><select id="f-gender"><option>Male</option><option>Female</option></select></div>
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label>Device</label>
+              <div class="sel-wrap"><select id="f-device"><option>Mobile</option><option>Desktop</option><option>Tablet</option></select></div>
+            </div>
+            <div class="field">
+              <label>Discount given?</label>
+              <div class="toggle-field">
+                <label class="sw">
+                  <input type="checkbox" id="f-discount"/>
+                  <span class="sw-track"><span class="sw-thumb"></span></span>
+                </label>
+                <span class="sw-val" id="sw-label">No</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="run-btn" id="runBtn">
+          Run prediction <span class="run-arrow">→</span>
+        </button>
+
+        <div class="field" style="margin-top:15px;">
+          <label>Actually Purchased?</label>
+          <div class="sel-wrap">
+            <select id="f-bought">
+              <option value="">Unknown</option>
+              <option value="1">Yes</option>
+              <option value="0">No</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="run-btn" id="saveBtn" type="button" style="background:#166534;">
+          💾 Save to MongoDB
+        </button>
+
+        <button class="run-btn" id="retrainBtn" type="button" style="background:#7c3aed;">
+          ⟳ Retrain Models
+        </button>
+
+        <div id="save-status" class="hidden" style="margin-top:12px;padding:10px;border-radius:8px;"></div>
+      </div>
+
+      <div class="pane results-pane">
+        <div class="pane-head">
+          <h2 class="pane-title">Prediction output</h2>
+        </div>
+
+        <div id="actual-label-box" class="actual-label hidden">
+          <span id="actual-label-text"></span>
+        </div>
+
+        <div id="results-empty" class="results-empty">
+          <div class="empty-circle"></div>
+          <p>Fetching customer data…</p>
+        </div>
+
+        <div id="results-loading" class="results-loading hidden">
+          <div class="spinner"></div>
+          <p>Running predictions…</p>
+        </div>
+
+        <div id="results-cards" class="results-cards hidden"></div>
+
+        <div id="verdict" class="verdict hidden">
+          <div class="verdict-inner">
+            <span class="verdict-tag">Final verdict</span>
+            <p id="verdict-text" class="verdict-text">—</p>
+            <p id="verdict-meta" class="verdict-meta">—</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TAB: METRICS -->
+  <section id="tab-metrics" class="tab">
+    <div class="pane wide-pane">
+      <div class="pane-head">
+        <h2 class="pane-title">Model performance</h2>
+        <span class="pane-sub">Evaluated on 20% held-out test data</span>
+      </div>
+      <div id="metrics-area"><p class="muted-msg">Loading…</p></div>
+    </div>
+  </section>
+
+  <!-- TAB: CHARTS -->
+  <section id="tab-charts" class="tab">
+    <div class="pane wide-pane">
+      <div class="pane-head">
+        <h2 class="pane-title">EDA &amp; evaluation charts</h2>
+        <span class="pane-sub">Generated during training</span>
+      </div>
+      <div id="charts-area" class="charts-area"><p class="muted-msg">Loading…</p></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  Customer Purchase Prediction &nbsp;·&nbsp;
+  C. Krishna Sree Vallabh (245523748010) &nbsp;·&nbsp;
+  M. Mahitha (245523748039) &nbsp;·&nbsp;
+  G. Charan (245523748303)
+</footer>
+
+
+<script src="static/js/app.js"></script>
+</body>
+</html>

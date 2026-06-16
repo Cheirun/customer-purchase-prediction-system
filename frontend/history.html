@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>History & Analytics — Purchase Predictor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/style.css"/>
+  <link rel="stylesheet" href="static/css/history.css"/>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="brand-dot"></span>Customer Purchase Predictor</div>
+    <nav class="nav-pills">
+      <a href="/"        class="pill">Individual</a>
+      <a href="/company" class="pill">Company</a>
+      <a href="/history" class="pill active">History</a>
+    </nav>
+    <div class="course-tag">B.Tech CS · III Year · Sec A</div>
+  </div>
+</header>
+
+<div class="hero-strip">
+  <div class="hero-strip-inner">
+    <div class="hero-copy">
+      <h1 class="hero-h1">History &amp;<br/><em>Live Analytics</em></h1>
+      <p class="hero-p">
+        Every prediction is logged to MongoDB Atlas in real time.
+        This page reads directly from Atlas to show live accuracy,
+        prediction counts, and the full audit trail.
+      </p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-box"><span class="stat-n" id="h-total">—</span><span class="stat-l">Total Predictions</span></div>
+      <div class="stat-box"><span class="stat-n" id="h-buyrate">—</span><span class="stat-l">Buy Rate</span></div>
+      <div class="stat-box"><span class="stat-n" id="h-avgprob">—</span><span class="stat-l">Avg Probability</span></div>
+    </div>
+  </div>
+</div>
+
+<main class="main">
+
+  <!-- ── Atlas status banner ── -->
+  <div id="atlas-banner" class="atlas-banner hidden">
+    <span class="atlas-dot"></span>
+    <span id="atlas-status-text">Checking Atlas connection…</span>
+  </div>
+
+  <!-- ── Live Accuracy Cards ── -->
+  <section class="section-block">
+    <div class="section-head">
+      <h2 class="section-title">Live Model Accuracy</h2>
+      <p class="section-sub">Calculated from all logged predictions where actual outcome is known</p>
+    </div>
+    <div id="accuracy-cards" class="accuracy-cards">
+      <div class="acc-skeleton"></div>
+      <div class="acc-skeleton"></div>
+      <div class="acc-skeleton"></div>
+      <div class="acc-skeleton"></div>
+    </div>
+  </section>
+
+  <!-- ── Daily Trend ── -->
+  <section class="section-block">
+    <div class="section-head">
+      <h2 class="section-title">Prediction Trend (Last 7 Days)</h2>
+      <p class="section-sub">How many predictions were made each day</p>
+    </div>
+    <div class="pane chart-pane">
+      <canvas id="trendChart" height="80"></canvas>
+      <p id="trend-empty" class="muted-msg hidden">Not enough daily data yet.</p>
+    </div>
+  </section>
+
+  <!-- ── Retrain History ── -->
+  <section class="section-block">
+    <div class="section-head">
+      <h2 class="section-title">Retrain History</h2>
+      <p class="section-sub">Every time the model was retrained, logged to Atlas</p>
+    </div>
+    <div class="pane">
+      <div id="retrain-history-area"><p class="muted-msg">Loading…</p></div>
+    </div>
+  </section>
+
+  <!-- ── Prediction Log ── -->
+  <section class="section-block">
+    <div class="section-head">
+      <h2 class="section-title">Prediction Audit Log</h2>
+      <p class="section-sub">Last 100 predictions — live from MongoDB Atlas</p>
+      <button class="icon-btn" id="refreshHistoryBtn">↺ Refresh</button>
+    </div>
+    <div class="pane table-pane">
+      <div id="hist-loading" class="table-loading hidden">
+        <div class="spinner"></div><span>Reading from Atlas…</span>
+      </div>
+      <div class="table-scroll">
+        <table class="batch-tbl">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Model</th>
+              <th>Prediction</th>
+              <th>Probability</th>
+              <th>Correct?</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody id="histBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Customer Purchase Prediction System &nbsp;·&nbsp;
+     C. Krishna Sree Vallabh (245523748010) &nbsp;·&nbsp;
+     M. Mahitha (245523748039) &nbsp;·&nbsp;
+     G. Charan (245523748303)</p>
+</footer>
+
+<!-- Chart.js for the trend chart -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="static/js/history.js"></script>
+</body>
+</html>
